@@ -12,3 +12,45 @@ generator client {
 datasource db {
   provider = "mysql"
 }
+
+model Room {
+  id          BigInt    @id @default(autoincrement())
+  publicId    String    @db.VarChar(100) @unique
+  createdAt   DateTime  @db.DateTime(6) @default(now())
+  expiresAt   DateTime? @db.DateTime(6)
+
+  users User[]
+  tracks Track[]
+
+  @@index([publicId])
+}
+
+model User {
+  id          BigInt    @id @default(autoincrement())
+  name        String    @db.VarChar(20)
+  createdAt   DateTime  @db.DateTime(6) @default(now())
+  roomId      BigInt
+
+  room Room @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  tracks Track[]
+
+  @@unique([roomId, name])
+  @@index([roomId, name])
+}
+
+model Track {
+  id          BigInt    @id @default(autoincrement())
+  title       String    @db.VarChar(150)
+  author      String    @db.VarChar(150)
+  createdAt   DateTime  @db.DateTime(6) @default(now())
+  dislike     Int       @default(0)
+  addedBy     BigInt    
+  roomId      BigInt
+
+  user User  @relation(fields: [addedBy], references: [id], onDelete: Cascade)
+  room Room  @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  @@unique([roomId, title])
+  @@index([roomId, addedBy])
+  @@index([roomId, title])
+}
