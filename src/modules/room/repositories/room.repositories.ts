@@ -7,7 +7,6 @@ export class RoomRepository {
 
   // POST .../rooms, in default, the room expires in 7 days.
   createRoom(expiresAt: Date) {
-    console.log(expiresAt);
     return this.prisma.room.create({
       data: {
         expiresAt,
