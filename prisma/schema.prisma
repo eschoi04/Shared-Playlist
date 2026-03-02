@@ -20,8 +20,10 @@ model Room {
 
   users User[]
   tracks Track[]
+  sessions Session[]
 
   @@index([publicId])
+  @@index([expiresAt])
 }
 
 model User {
@@ -32,6 +34,7 @@ model User {
 
   room Room @relation(fields: [roomId], references: [id], onDelete: Cascade)
   tracks Track[]
+  sessions Session[]
 
   @@unique([roomId, name])
   @@index([roomId, name])
@@ -52,4 +55,17 @@ model Track {
   @@unique([roomId, title])
   @@index([roomId, addedBy])
   @@index([roomId, title])
+}
+
+model Session {
+  id         String    @id @default(uuid())
+  roomId     BigInt
+  userId     BigInt
+  expiresAt  DateTime  @db.DateTime(6)
+
+  room Room @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
 }

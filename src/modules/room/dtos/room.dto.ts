@@ -1,17 +1,14 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNumber, IsOptional } from 'class-validator';
-import { Transform } from 'class-transformer';
+import { IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateRoomDto {
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: 7 })
   @IsOptional()
   @IsNumber()
   expiresIn?: number;
 }
 
 export class RoomResponseDto {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
-  @Transform(({ value }) => value.toString())
   @ApiProperty({ example: 1 })
   id: string;
 
@@ -23,4 +20,23 @@ export class RoomResponseDto {
 
   @ApiProperty({ example: 'date' })
   expiresAt: string;
+}
+
+export class CreateSessionDto {
+  @ApiProperty({ example: 'eunsong' })
+  @IsString()
+  name: string;
+
+  @ApiPropertyOptional({ example: 7 })
+  @IsOptional()
+  @IsNumber()
+  expiresIn?: number;
+}
+
+export class SessionResponseDto {
+  @ApiProperty({ example: 1 })
+  userId: string;
+
+  @ApiProperty({ example: 'eunsong' })
+  name: string;
 }
