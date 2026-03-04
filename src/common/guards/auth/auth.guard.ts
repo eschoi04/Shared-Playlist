@@ -12,7 +12,7 @@ export class AuthGuard implements CanActivate {
   constructor(private readonly prisma: PrismaService) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
-    const token: string = request.cookies?.accessToken as string;
+    const token: string = request.cookies.room_session as string;
 
     if (!token) throw new UnauthorizedException('token does not exist.');
 
@@ -31,9 +31,6 @@ export class AuthGuard implements CanActivate {
     request.userId = session.userId.toString();
     request.name = session.user.name;
 
-    // debug
-    console.log(request.headers.cookie);
-    console.log(request.cookies);
     return true;
   }
 }
