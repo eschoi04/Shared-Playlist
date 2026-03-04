@@ -28,8 +28,6 @@ export class TrackService {
   constructor(private readonly httpService: HttpService) {}
 
   async searchTrack(title: string, author?: string) {
-    //debug
-    console.log(title);
     // null check
     if (!process.env.BASE_URL)
       throw new Error('BASE_URL has NOT been defined.');
