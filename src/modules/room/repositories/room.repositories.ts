@@ -34,12 +34,30 @@ export class RoomRepository {
     });
   }
 
-  createSession(roomId: bigint, userId: bigint, expiresAt: Date) {
-    return this.prisma.session.create({
-      data: {
+  upsertSession(roomId: bigint, userId: bigint, expiresAt: Date) {
+    return this.prisma.session.upsert({
+      where: {
+        roomId_userId: {
+          roomId,
+          userId,
+        },
+      },
+      update: {
+        expiresAt,
+      },
+      create: {
         roomId,
         userId,
         expiresAt,
+      },
+    });
+  }
+
+  findUser(name: string, roomId: bigint) {
+    return this.prisma.user.findFirst({
+      where: {
+        name,
+        roomId,
       },
     });
   }

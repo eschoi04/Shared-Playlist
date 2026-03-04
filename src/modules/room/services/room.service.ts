@@ -24,18 +24,24 @@ export class RoomService {
     expiresAt.setDate(expiresAt.getDate() + expiresIn);
 
     const roomInfo = await this.roomRepository.getRoomIdByPublicId(publicId);
+
     // better to wrap error response with custom error codes later on..
     if (!roomInfo) throw new Error('roominfo does not exist.');
-    const userInfo = await this.roomRepository.createUser(
-      body.name,
+
+    // use user as a function-scope variable
+    let user = await this.roomRepository.findUser(body.name, roomInfo.id);
+
+    if (!user) {
+      user = await this.roomRepository.createUser(body.name, roomInfo.id);
+      if (!user) throw new Error('userinfo does not exist.');
+    }
+
+    const result = await this.roomRepository.upsertSession(
       roomInfo.id,
-    );
-    if (!userInfo) throw new Error('userinfo does not exist.');
-    const result = await this.roomRepository.createSession(
-      roomInfo.id,
-      userInfo.id,
+      user.id,
       expiresAt,
     );
+
     const serialized = {
       userId: result.userId.toString(),
       name: body.name,
