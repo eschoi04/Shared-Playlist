@@ -14,9 +14,11 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
 
+    // default status and message
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
     let message = 'Internal server error';
 
+    // show details of status and message when needed
     if (exception instanceof HttpException) {
       status = exception.getStatus();
 
@@ -30,6 +32,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
             (res as any).message || exception.message;
     }
 
+    // response format
     response.status(status).json({
       success: false,
       error: {

@@ -4,6 +4,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import { SuccessResponseInterceptor } from './common/interceptors/success';
 import { HttpExceptionFilter } from './common/interceptors/error';
+import cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -33,6 +34,9 @@ async function bootstrap() {
 
   // global filter for error response
   app.useGlobalFilters(new HttpExceptionFilter());
+
+  // use cookie-parser
+  app.use(cookieParser());
 
   await app.listen(process.env.PORT ?? 3000);
 }
