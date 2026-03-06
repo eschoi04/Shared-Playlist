@@ -4,11 +4,11 @@ import { AuthGuard } from 'src/common/guards/auth/auth.guard';
 import { searchResponseDto } from '../dtos/track.dto';
 import { TrackService } from '../services/track.service';
 
-@Controller('track')
+@Controller('tracks')
 export class TrackController {
   constructor(private readonly trackService: TrackService) {}
 
-  @ApiOperation({ summary: 'search for the track' })
+  @ApiOperation({ summary: '음악 검색' })
   @ApiOkResponse({ type: searchResponseDto })
   @ApiQuery({
     required: true,

@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { searchResponseDto } from '../dtos/track.dto';
+import { TrackRepository } from '../repositories/track.repositories';
+import { RoomRepository } from 'src/modules/room/repositories/room.repositories';
 
 interface LastfmTrack {
   data: {
@@ -25,7 +27,11 @@ interface LastfmTrack {
 }
 @Injectable()
 export class TrackService {
-  constructor(private readonly httpService: HttpService) {}
+  constructor(
+    private readonly httpService: HttpService,
+    private readonly trackRepository: TrackRepository,
+    private readonly roomRepository: RoomRepository,
+  ) {}
 
   async searchTrack(title: string, author?: string) {
     // null check
@@ -53,5 +59,37 @@ export class TrackService {
     }));
 
     return refinedResult;
+  }
+
+  async addTrack(
+    title: string,
+    author: string,
+    addedBy: string,
+    publicId: string,
+    imageUrl?: string,
+  ) {
+    const room = await this.roomRepository.getRoomIdByPublicId(publicId);
+    if (!room) throw new Error('given room does NOT exist.');
+
+    await this.trackRepository.addTrack(
+      title,
+      author,
+      BigInt(addedBy),
+      room.id,
+      imageUrl,
+    );
+  }
+
+  async deleteTrack(userId: string, trackId: string) {
+    const deletable = await this.trackRepository.findUserTrack(
+      BigInt(userId),
+      BigInt(trackId),
+    );
+
+    if (!deletable)
+      throw new Error('this user is NOT eligible to delete this track.');
+
+    const result = await this.trackRepository.deleteTrack(BigInt(trackId));
+    console.log(result);
   }
 }

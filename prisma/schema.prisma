@@ -48,6 +48,7 @@ model Track {
   dislike     Int       @default(0)
   addedBy     BigInt    
   roomId      BigInt
+  imageUrl    String?   @db.VarChar(255)
 
   user User  @relation(fields: [addedBy], references: [id], onDelete: Cascade)
   room Room  @relation(fields: [roomId], references: [id], onDelete: Cascade)
