@@ -53,11 +53,29 @@ export class RoomRepository {
     });
   }
 
-  findUser(name: string, roomId: bigint) {
+  findUserByName(name: string, roomId: bigint) {
     return this.prisma.user.findFirst({
       where: {
         name,
         roomId,
+      },
+    });
+  }
+
+  // DELETE .../rooms/{publicId}
+  findUserById(userId: bigint, roomId: bigint) {
+    return this.prisma.user.findFirst({
+      where: {
+        id: userId,
+        roomId,
+      },
+    });
+  }
+
+  deleteRoom(publicId: string) {
+    return this.prisma.room.delete({
+      where: {
+        publicId,
       },
     });
   }

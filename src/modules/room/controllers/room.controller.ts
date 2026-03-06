@@ -1,4 +1,13 @@
-import { Body, Controller, Param, Post, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Param,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import {
   CreateRoomDto,
   CreateSessionDto,
@@ -7,7 +16,8 @@ import {
 } from '../dtos/room.dto';
 import { RoomService } from '../services/room.service';
 import { ApiOperation, ApiOkResponse, ApiParam } from '@nestjs/swagger';
-import type { Response } from 'express';
+import type { Response, Request } from 'express';
+import { AuthGuard } from 'src/common/guards/auth/auth.guard';
 
 @Controller('rooms')
 export class RoomController {
@@ -40,5 +50,18 @@ export class RoomController {
       maxAge: result.maxAge,
     });
     return { name: result.name, userId: result.userId };
+  }
+
+  @ApiOperation({ summary: '룸 삭제' })
+  @ApiOkResponse()
+  @ApiParam({
+    name: 'publicId',
+    description: 'uuid for each room',
+  })
+  @UseGuards(AuthGuard)
+  @Delete(':publicId')
+  async deleteRoom(@Req() req: Request, @Param('publicId') publicId: string) {
+    if (!req.userId) throw new Error('userId is NOT defined.');
+    await this.roomService.deleteRoom(req.userId, publicId);
   }
 }
