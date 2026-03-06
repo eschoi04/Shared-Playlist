@@ -29,7 +29,7 @@ export class RoomService {
     if (!roomInfo) throw new Error('roominfo does not exist.');
 
     // use user as a function-scope variable
-    let user = await this.roomRepository.findUser(body.name, roomInfo.id);
+    let user = await this.roomRepository.findUserByName(body.name, roomInfo.id);
 
     if (!user) {
       user = await this.roomRepository.createUser(body.name, roomInfo.id);
@@ -49,5 +49,20 @@ export class RoomService {
       maxAge: expiresIn * 1000 * 60 * 60 * 24,
     };
     return serialized;
+  }
+
+  async deleteRoom(userId: string, publicId: string) {
+    const roomId = await this.roomRepository.getRoomIdByPublicId(publicId);
+    if (!roomId)
+      throw new Error('could NOT find a room that matches given publicId.');
+
+    const exists = await this.roomRepository.findUserById(
+      BigInt(userId),
+      roomId.id,
+    );
+    if (!exists)
+      throw new Error('this user is NOT entitled to delete the room.');
+
+    await this.roomRepository.deleteRoom(publicId);
   }
 }
