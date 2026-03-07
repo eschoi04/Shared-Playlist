@@ -30,17 +30,19 @@ export class HttpExceptionFilter implements ExceptionFilter {
           ? res
           : // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
             (res as any).message || exception.message;
-    }
+    } else if (exception instanceof Error) {
+      message = exception.message;
 
-    // response format
-    response.status(status).json({
-      success: false,
-      error: {
-        statusCode: status,
-        message,
-        path: request.url,
-        timestamp: new Date().toISOString(),
-      },
-    });
+      // response format
+      response.status(status).json({
+        success: false,
+        error: {
+          statusCode: status,
+          message,
+          path: request.url,
+          timestamp: new Date().toISOString(),
+        },
+      });
+    }
   }
 }

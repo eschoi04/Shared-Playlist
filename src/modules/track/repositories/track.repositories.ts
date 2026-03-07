@@ -61,4 +61,24 @@ export class TrackRepository {
       },
     });
   }
+
+  // GET .../users/{userId}/tracks
+  async getAllTracksByUser(userId: bigint, cursor?: bigint, take?: number) {
+    return await this.prisma.track.findMany({
+      take: take,
+      where: {
+        addedBy: userId,
+      },
+      ...(cursor && {
+        cursor: { id: cursor },
+        skip: 1,
+      }),
+      orderBy: {
+        id: 'asc',
+      },
+      include: {
+        user: true,
+      },
+    });
+  }
 }

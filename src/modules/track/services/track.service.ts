@@ -70,14 +70,17 @@ export class TrackService {
   ) {
     const room = await this.roomRepository.getRoomIdByPublicId(publicId);
     if (!room) throw new Error('given room does NOT exist.');
-
-    await this.trackRepository.addTrack(
-      title,
-      author,
-      BigInt(addedBy),
-      room.id,
-      imageUrl,
-    );
+    try {
+      await this.trackRepository.addTrack(
+        title,
+        author,
+        BigInt(addedBy),
+        room.id,
+        imageUrl,
+      );
+    } catch {
+      throw new Error('this song has already been added.');
+    }
   }
 
   async deleteTrack(userId: string, trackId: string) {
@@ -89,8 +92,7 @@ export class TrackService {
     if (!deletable)
       throw new Error('this user is NOT eligible to delete this track.');
 
-    const result = await this.trackRepository.deleteTrack(BigInt(trackId));
-    console.log(result);
+    await this.trackRepository.deleteTrack(BigInt(trackId));
   }
 
   async getAllTracks(publicId: string, userId: string, cursor?: string) {
@@ -99,12 +101,12 @@ export class TrackService {
     const room = await this.roomRepository.getRoomIdByPublicId(publicId);
     if (!room) throw new Error('room does not exist.');
 
-    const deletable = await this.roomRepository.findUserById(
+    const authorized = await this.roomRepository.findUserById(
       BigInt(userId),
       room.id,
     );
 
-    if (!deletable) throw new Error('this user does NOT belong to the room.');
+    if (!authorized) throw new Error('this user does NOT belong to the room.');
 
     const result = await this.trackRepository.getAllTracks(
       room.id,
@@ -113,6 +115,57 @@ export class TrackService {
     );
     if (!result) return result;
 
+    const refinedResult: getTracksDto[] = result.map((track) => ({
+      title: track.title,
+      author: track.author,
+      dislike: track.dislike,
+      addedBy: track.user.name,
+      createdAt: track.createdAt.toISOString(),
+      imageUrl: track.imageUrl ?? undefined,
+    }));
+
+    const nextCursor =
+      result.length === take ? result[result.length - 1].id : null;
+
+    return {
+      tracks: refinedResult,
+      nextCursor: nextCursor?.toString() ?? null,
+    };
+  }
+
+  async getAllTracksByUser(
+    publicId: string,
+    reqUserId: string,
+    addedUserId: string,
+    cursor?: string,
+  ) {
+    const take: number = 20;
+    // check if the room exists.
+    const room = await this.roomRepository.getRoomIdByPublicId(publicId);
+    if (!room) throw new Error('room does not exist.');
+
+    // check if the owner of the request is authorized.
+    const authorized = await this.roomRepository.findUserById(
+      BigInt(reqUserId),
+      room.id,
+    );
+    if (!authorized) throw new Error('this user does NOT belong to the room.');
+
+    // check if the given userId belongs to the room.
+    const authorizedAddedBy = await this.roomRepository.findUserById(
+      BigInt(addedUserId),
+      room.id,
+    );
+    if (!authorizedAddedBy)
+      throw new Error('this user does NOT belong to the room.');
+
+    // get the result.
+    const result = await this.trackRepository.getAllTracksByUser(
+      BigInt(addedUserId),
+      cursor == undefined ? undefined : BigInt(cursor),
+      take,
+    );
+    if (!result) return result;
     const refinedResult: getTracksDto[] = result.map((track) => ({
       title: track.title,
       author: track.author,

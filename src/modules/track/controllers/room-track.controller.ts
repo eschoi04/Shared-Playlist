@@ -20,7 +20,7 @@ import { addTrackDto, getTracksDto } from '../dtos/track.dto';
 import { AuthGuard } from 'src/common/guards/auth/auth.guard';
 import type { Request } from 'express';
 
-@Controller('rooms/:publicId/tracks')
+@Controller('rooms/:publicId')
 export class RoomTrackController {
   constructor(private readonly trackService: TrackService) {}
 
@@ -31,7 +31,7 @@ export class RoomTrackController {
     description: 'uuid for each room',
   })
   @UseGuards(AuthGuard)
-  @Post()
+  @Post('tracks')
   async addTrack(
     @Body() body: addTrackDto,
     @Req() req: Request,
@@ -54,7 +54,7 @@ export class RoomTrackController {
     description: 'id for each track',
   })
   @UseGuards(AuthGuard)
-  @Delete(':trackId')
+  @Delete('tracks/:trackId')
   async deleteTrack(@Req() req: Request, @Param('trackId') trackId: string) {
     if (!req.userId) throw new Error('please login first.');
     await this.trackService.deleteTrack(req.userId, trackId);
@@ -64,19 +64,45 @@ export class RoomTrackController {
   @ApiOkResponse({ type: getTracksDto })
   @ApiQuery({
     required: false,
-    name: 'nextCursor',
+    name: 'cursor',
     description: 'cursor for paging',
-    example: 0,
   })
   @UseGuards(AuthGuard)
-  @Get()
+  @Get('tracks')
   async getAllTracks(
     @Req() req: Request,
     @Param('publicId') publicId: string,
     @Query('cursor') cursor: string,
   ) {
-    console.log('controller nextCursor', cursor);
     if (!req.userId) throw new Error('please login first.');
-    return this.trackService.getAllTracks(publicId, req.userId, cursor);
+    return await this.trackService.getAllTracks(publicId, req.userId, cursor);
+  }
+
+  @ApiOperation({ summary: '특정 유저가 추가한 곡 조회' })
+  @ApiOkResponse({ type: getTracksDto })
+  @ApiQuery({
+    required: false,
+    name: 'cursor',
+    description: 'cursor for paging',
+  })
+  @ApiParam({
+    name: 'userId',
+    description: 'userId',
+  })
+  @UseGuards(AuthGuard)
+  @Get('users/:userId/tracks')
+  async getAllTracksByUser(
+    @Req() req: Request,
+    @Param('publicId') publicId: string,
+    @Query('cursor') cursor: string,
+    @Param('userId') userId: string,
+  ) {
+    if (!req.userId) throw new Error('please login first.');
+    return await this.trackService.getAllTracksByUser(
+      publicId,
+      req.userId,
+      userId,
+      cursor,
+    );
   }
 }
