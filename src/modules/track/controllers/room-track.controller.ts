@@ -2,14 +2,21 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   Param,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { ApiOkResponse, ApiOperation, ApiParam } from '@nestjs/swagger';
+import {
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+} from '@nestjs/swagger';
 import { TrackService } from '../services/track.service';
-import { addTrackDto } from '../dtos/track.dto';
+import { addTrackDto, getTracksDto } from '../dtos/track.dto';
 import { AuthGuard } from 'src/common/guards/auth/auth.guard';
 import type { Request } from 'express';
 
@@ -51,5 +58,25 @@ export class RoomTrackController {
   async deleteTrack(@Req() req: Request, @Param('trackId') trackId: string) {
     if (!req.userId) throw new Error('please login first.');
     await this.trackService.deleteTrack(req.userId, trackId);
+  }
+
+  @ApiOperation({ summary: '전체 플레이리스트 조회' })
+  @ApiOkResponse({ type: getTracksDto })
+  @ApiQuery({
+    required: false,
+    name: 'nextCursor',
+    description: 'cursor for paging',
+    example: 0,
+  })
+  @UseGuards(AuthGuard)
+  @Get()
+  async getAllTracks(
+    @Req() req: Request,
+    @Param('publicId') publicId: string,
+    @Query('cursor') cursor: string,
+  ) {
+    console.log('controller nextCursor', cursor);
+    if (!req.userId) throw new Error('please login first.');
+    return this.trackService.getAllTracks(publicId, req.userId, cursor);
   }
 }

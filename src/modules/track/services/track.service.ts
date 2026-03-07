@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
-import { searchResponseDto } from '../dtos/track.dto';
+import { getTracksDto, searchResponseDto } from '../dtos/track.dto';
 import { TrackRepository } from '../repositories/track.repositories';
 import { RoomRepository } from 'src/modules/room/repositories/room.repositories';
 
@@ -91,5 +91,43 @@ export class TrackService {
 
     const result = await this.trackRepository.deleteTrack(BigInt(trackId));
     console.log(result);
+  }
+
+  async getAllTracks(publicId: string, userId: string, cursor?: string) {
+    const take: number = 20;
+
+    const room = await this.roomRepository.getRoomIdByPublicId(publicId);
+    if (!room) throw new Error('room does not exist.');
+
+    const deletable = await this.roomRepository.findUserById(
+      BigInt(userId),
+      room.id,
+    );
+
+    if (!deletable) throw new Error('this user does NOT belong to the room.');
+
+    const result = await this.trackRepository.getAllTracks(
+      room.id,
+      cursor == undefined ? undefined : BigInt(cursor),
+      take,
+    );
+    if (!result) return result;
+
+    const refinedResult: getTracksDto[] = result.map((track) => ({
+      title: track.title,
+      author: track.author,
+      dislike: track.dislike,
+      addedBy: track.user.name,
+      createdAt: track.createdAt.toISOString(),
+      imageUrl: track.imageUrl ?? undefined,
+    }));
+
+    const nextCursor =
+      result.length === take ? result[result.length - 1].id : null;
+
+    return {
+      tracks: refinedResult,
+      nextCursor: nextCursor?.toString() ?? null,
+    };
   }
 }
