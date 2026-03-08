@@ -61,7 +61,7 @@ export class RoomController {
   @UseGuards(AuthGuard)
   @Delete(':publicId')
   async deleteRoom(@Req() req: Request, @Param('publicId') publicId: string) {
-    if (!req.userId) throw new Error('userId is NOT defined.');
+    if (!req.userId) throw new Error('please login first.');
     await this.roomService.deleteRoom(req.userId, publicId);
   }
 }
