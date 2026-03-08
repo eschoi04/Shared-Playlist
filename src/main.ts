@@ -11,6 +11,12 @@ async function bootstrap() {
 
   app.setGlobalPrefix('api/v1');
 
+  // enable cors settings for front-end.
+  app.enableCors({
+    origin: 'http://localhost:5173',
+    credentials: true,
+  });
+
   // swagger setup
   const config = new DocumentBuilder()
     .setTitle('Shared Playlist API')

@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   Query,
   Req,
@@ -16,7 +17,11 @@ import {
   ApiQuery,
 } from '@nestjs/swagger';
 import { TrackService } from '../services/track.service';
-import { addTrackDto, getTracksDto } from '../dtos/track.dto';
+import {
+  addTrackDto,
+  dislikeResponseDto,
+  getTracksDto,
+} from '../dtos/track.dto';
 import { AuthGuard } from 'src/common/guards/auth/auth.guard';
 import type { Request } from 'express';
 
@@ -104,5 +109,22 @@ export class RoomTrackController {
       userId,
       cursor,
     );
+  }
+
+  @ApiOperation({ summary: '유저가 추가한 곡에 dislike 추가하기' })
+  @ApiOkResponse({ type: dislikeResponseDto })
+  @ApiParam({
+    name: 'trackId',
+    description: 'the id of the track you want to dislike.',
+  })
+  @UseGuards(AuthGuard)
+  @Patch('tracks/:trackId')
+  async dislikeTrack(
+    @Req() req: Request,
+    @Param('publicId') publicId: string,
+    @Param('trackId') trackId: string,
+  ) {
+    if (!req.userId) throw new Error('please login first.');
+    return await this.trackService.dislikeTrack(req.userId, publicId, trackId);
   }
 }

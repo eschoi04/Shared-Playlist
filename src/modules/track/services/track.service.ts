@@ -1,7 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
-import { getTracksDto, searchResponseDto } from '../dtos/track.dto';
+import {
+  dislikeResponseDto,
+  getTracksDto,
+  searchResponseDto,
+} from '../dtos/track.dto';
 import { TrackRepository } from '../repositories/track.repositories';
 import { RoomRepository } from 'src/modules/room/repositories/room.repositories';
 
@@ -182,5 +186,29 @@ export class TrackService {
       tracks: refinedResult,
       nextCursor: nextCursor?.toString() ?? null,
     };
+  }
+
+  async dislikeTrack(userId: string, publicId: string, trackId: string) {
+    // find roomId by publicId.
+    const roomId = await this.roomRepository.getRoomIdByPublicId(publicId);
+    if (!roomId)
+      throw new Error('could NOT find a room that matches given publicId.');
+
+    // check if this user belongs to the room.
+    const exists = await this.roomRepository.findUserById(
+      BigInt(userId),
+      roomId.id,
+    );
+    if (!exists)
+      throw new Error('this user is NOT entitled to dislike the track.');
+
+    // add +1 dislike the given track.
+    const result = await this.trackRepository.dislikeTrack(BigInt(trackId));
+
+    const returnResult: dislikeResponseDto = {
+      dislike: result.dislike.toString(),
+    };
+
+    return returnResult;
   }
 }

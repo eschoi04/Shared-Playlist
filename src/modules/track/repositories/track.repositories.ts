@@ -81,4 +81,18 @@ export class TrackRepository {
       },
     });
   }
+
+  // PATCH .../tracks/{trackId}/dislike
+  async dislikeTrack(trackId: bigint) {
+    return await this.prisma.track.update({
+      where: {
+        id: trackId,
+      },
+      data: {
+        dislike: {
+          increment: 1,
+        },
+      },
+    });
+  }
 }
