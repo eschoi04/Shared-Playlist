@@ -1,3 +1,27 @@
+# Shared Playlist Backend API
+
+Backend service for collaborative playlist sessions built with NestJS.
+
+## Overview
+
+This project implements a backend system that allows users to create and join shared playlist rooms.  
+Users can search for music through an external API and manage playlists collaboratively within a session.
+
+## Tech Stack
+
+- NestJS
+- TypeScript
+- Prisma ORM
+- MySQL
+
+## Key Features
+
+- Session-based room creation using UUID
+- Cookie-based authentication using NestJS Guards
+- Integration with external music APIs for track search
+- RESTful API design for room and session management
+
+
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>
