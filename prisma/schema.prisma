@@ -5,10 +5,69 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "mysql"
+}
+
+model Room {
+  id          BigInt    @id @default(autoincrement())
+  publicId    String    @default(uuid()) @unique
+  createdAt   DateTime  @db.DateTime(6) @default(now())
+  expiresAt   DateTime? @db.DateTime(6)
+
+  users User[]
+  tracks Track[]
+  sessions Session[]
+
+  @@index([publicId])
+  @@index([expiresAt])
+}
+
+model User {
+  id          BigInt    @id @default(autoincrement())
+  name        String    @db.VarChar(20)
+  createdAt   DateTime  @db.DateTime(6) @default(now())
+  roomId      BigInt
+
+  room Room @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  tracks Track[]
+  sessions Session[]
+
+  @@unique([roomId, name])
+  @@index([roomId, name])
+}
+
+model Track {
+  id          BigInt    @id @default(autoincrement())
+  title       String    @db.VarChar(150)
+  author      String    @db.VarChar(150)
+  createdAt   DateTime  @db.DateTime(6) @default(now())
+  dislike     Int       @default(0)
+  addedBy     BigInt    
+  roomId      BigInt
+  imageUrl    String?   @db.VarChar(255)
+
+  user User  @relation(fields: [addedBy], references: [id], onDelete: Cascade)
+  room Room  @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  @@unique([roomId, title])
+  @@index([roomId, addedBy])
+  @@index([roomId, title])
+}
+
+model Session {
+  id         String    @id @default(uuid())
+  roomId     BigInt
+  userId     BigInt
+  expiresAt  DateTime  @db.DateTime(6)
+
+  room Room @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@unique([roomId, userId])
 }
