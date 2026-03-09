@@ -59,7 +59,7 @@ export class TrackService {
     const refinedResult: searchResponseDto[] = tracks.map((track) => ({
       title: track.name,
       author: track.artist,
-      imageUrl: track.image?.[2]?.['#text'],
+      imageUrl: track.image?.[0]?.['#text'],
     }));
 
     return refinedResult;
@@ -125,6 +125,7 @@ export class TrackService {
       dislike: track.dislike,
       addedBy: track.user.name,
       createdAt: track.createdAt.toISOString(),
+      trackId: track.id.toString(),
       imageUrl: track.imageUrl ?? undefined,
     }));
 
@@ -176,6 +177,7 @@ export class TrackService {
       dislike: track.dislike,
       addedBy: track.user.name,
       createdAt: track.createdAt.toISOString(),
+      trackId: track.id.toString(),
       imageUrl: track.imageUrl ?? undefined,
     }));
 

@@ -79,4 +79,32 @@ export class RoomRepository {
       },
     });
   }
+
+  // GET .../rooms/{publicId}
+  getRoomInfo(roomId: bigint) {
+    return this.prisma.room.findMany({
+      where: {
+        id: roomId,
+      },
+      include: {
+        users: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
+  }
+
+  // PATCH .../rooms/{publicId}
+  extendRoom(roomId: bigint, expiresAt: Date) {
+    return this.prisma.room.update({
+      where: {
+        id: roomId,
+      },
+      data: {
+        expiresAt,
+      },
+    });
+  }
 }

@@ -55,6 +55,9 @@ export class getTracksDto {
 
   @ApiProperty({ example: 'http://userserve-ak.last.fm/serve/example.jpg' })
   imageUrl?: string;
+
+  @ApiProperty({ example: 1 })
+  trackId: string;
 }
 
 export class dislikeResponseDto {
