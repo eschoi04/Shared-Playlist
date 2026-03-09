@@ -65,4 +65,45 @@ export class RoomService {
 
     await this.roomRepository.deleteRoom(publicId);
   }
+
+  async getRoomInfo(userId: string, publicId: string) {
+    const roomId = await this.roomRepository.getRoomIdByPublicId(publicId);
+    if (!roomId)
+      throw new Error('could NOT find a room that matches given publicId.');
+
+    const exists = await this.roomRepository.findUserById(
+      BigInt(userId),
+      roomId.id,
+    );
+    if (!exists) throw new Error('this user does NOT belong to the room.');
+
+    const result = await this.roomRepository.getRoomInfo(roomId.id);
+    const createdAt = result[0].createdAt;
+    const expiresAt = result[0].expiresAt;
+    const names = result.flatMap((r) => r.users.map((u) => u.name));
+
+    return { createdAt, expiresAt, names };
+  }
+
+  async extendRoom(userId: string, publicId: string) {
+    const roomId = await this.roomRepository.getRoomIdByPublicId(publicId);
+    if (!roomId)
+      throw new Error('could NOT find a room that matches given publicId.');
+
+    const exists = await this.roomRepository.findUserById(
+      BigInt(userId),
+      roomId.id,
+    );
+    if (!exists) throw new Error('this user does NOT belong to the room.');
+
+    const extendedDate = new Date();
+    extendedDate.setDate(extendedDate.getDate() + 7);
+
+    const result = await this.roomRepository.extendRoom(
+      roomId.id,
+      extendedDate,
+    );
+
+    return { expiresAt: result.expiresAt };
+  }
 }

@@ -2,7 +2,9 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   Param,
+  Patch,
   Post,
   Req,
   Res,
@@ -63,5 +65,31 @@ export class RoomController {
   async deleteRoom(@Req() req: Request, @Param('publicId') publicId: string) {
     if (!req.userId) throw new Error('please login first.');
     await this.roomService.deleteRoom(req.userId, publicId);
+  }
+
+  @ApiOperation({ summary: '룸 정보 가져오기' })
+  @ApiOkResponse()
+  @ApiParam({
+    name: 'publicId',
+    description: 'uuid for each room',
+  })
+  @UseGuards(AuthGuard)
+  @Get(':publicId')
+  async getRoomInfo(@Req() req: Request, @Param('publicId') publicId: string) {
+    if (!req.userId) throw new Error('please login first.');
+    return await this.roomService.getRoomInfo(req.userId, publicId);
+  }
+
+  @ApiOperation({ summary: '룸 만료 연장하기(7일)' })
+  @ApiOkResponse()
+  @ApiParam({
+    name: 'publicId',
+    description: 'uuid for each room',
+  })
+  @UseGuards(AuthGuard)
+  @Patch(':publicId')
+  async extendRoom(@Req() req: Request, @Param('publicId') publicId: string) {
+    if (!req.userId) throw new Error('please login first.');
+    return await this.roomService.extendRoom(req.userId, publicId);
   }
 }
