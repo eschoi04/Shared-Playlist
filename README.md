@@ -1,123 +1,192 @@
-# Shared Playlist Backend API
+# 🎧 Shared Playlist
 
-Backend service for collaborative playlist sessions built with NestJS.
+> Build a playlist together with your favorite people — no sign-up required.
 
-## Overview
+**[🔗 Live Demo → shared-playlist.com](https://www.shared-playlist.com)**
 
-This project implements a backend system that allows users to create and join shared playlist rooms.  
-Users can search for music through an external API and manage playlists collaboratively within a session.
+---
 
-## Tech Stack
+## ✨ Overview
 
-- NestJS
-- TypeScript
-- Prisma ORM
-- MySQL
+**Shared Playlist** is a lightweight, real-time collaborative playlist app. Create a room, share the link, and start adding tracks together — no email, no password, no friction.
 
-## Key Features
+Whether it's a road trip, a party, or a late-night music session with a friend across the world, Shared Playlist makes it easy to discover what everyone's vibing to.
 
-- Session-based room creation using UUID
-- Cookie-based authentication using NestJS Guards
-- Integration with external music APIs for track search
-- RESTful API design for room and session management
+---
 
+## 🚀 Features
 
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+- **Instant Rooms** — Create a room in one click and share the link with anyone
+- **No Sign-up Required** — Just enter a nickname and you're in
+- **Collaborative Playlist** — Add, view, and manage tracks in real time
+- **👎 Dislike System** — Let your friends know when a track isn't hitting
+- **Dislike Awards** — A live leaderboard of the most disliked contributors
+- **Screenshot Export** — Clean capture-ready view to recreate the playlist in any streaming app
+- **Text Export** — Copy the full playlist as plain text
+- **Member Tracks** — Click any member's name to see what they've added
+- **Room Management** — Extend expiry by 7 days or delete the room anytime
+- **Bilingual** — Full Korean 🇰🇷 and English 🇺🇸 support
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+---
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 🔩 Tech Stack
 
-## Description
+### Backend
+| Layer | Technology |
+|---|---|
+| Framework | NestJS |
+| Language | TypeScript |
+| ORM | Prisma |
+| Database | MySQL (AWS RDS) |
+| Auth | Cookie-based sessions with NestJS Guards |
+| Music Data | Last.fm API |
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+### Frontend
+| Layer | Technology |
+|---|---|
+| Framework | React + Vite |
+| Language | TypeScript |
+| Routing | React Router |
+| Styling | Inline styles + CSS variables |
+| i18n | Custom translation layer |
 
-## Project setup
+### Infrastructure
+| Layer | Technology |
+|---|---|
+| Backend Hosting | AWS EC2 |
+| Containerization | Docker |
+| Frontend Hosting | Vercel |
+| Database | AWS RDS (MySQL) |
 
-```bash
-$ npm install
+---
+
+## 🏗️ Architecture
+
+```
+┌─────────────────────┐        ┌──────────────────────────┐
+│   React + Vite      │  HTTPS │   NestJS API             │
+│   (Vercel)          │ ──────▶│   (AWS EC2 + Docker)     │
+│                     │        │                          │
+│  - Room UI          │        │  - Room Management       │
+│  - Search           │        │  - Track Service         │
+│  - Playlist         │        │  - Auth Guard (Cookie)   │
+└─────────────────────┘        └────────────┬─────────────┘
+                                            │
+                              ┌─────────────▼─────────────┐
+                              │   MySQL (AWS RDS)          │
+                              │   Prisma ORM               │
+                              └───────────────────────────┘
 ```
 
-## Compile and run the project
+---
+
+## 🛠️ Local Development
+
+### Prerequisites
+- Node.js 20+
+- Docker & Docker Compose
+- MySQL (or use Docker)
+
+### Backend
 
 ```bash
-# development
-$ npm run start
+# Clone the repo
+git clone https://github.com/eschoi04/Shared-Playlist.git
+cd Shared-Playlist
 
-# watch mode
-$ npm run start:dev
+# Install dependencies
+npm install
 
-# production mode
-$ npm run start:prod
+# Set up environment variables
+cp .env.example .env
+# Fill in DATABASE_URL and other required vars
+
+# Run database migrations
+npx prisma migrate dev
+
+# Start in development mode
+npm run start:dev
 ```
 
-## Run tests
+### Frontend
 
 ```bash
-# unit tests
-$ npm run test
+cd frontend
 
-# e2e tests
-$ npm run test:e2e
+# Install dependencies
+npm install
 
-# test coverage
-$ npm run test:cov
+# Start development server
+npm run dev
 ```
 
-## Deployment
+The app will be available at `http://localhost:5173`.
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+> **Note:** For local development against the production backend, configure `vite.config.ts` to proxy API requests.
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### Docker (Production)
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+docker compose up --build
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+---
 
-## Resources
+## 🌐 API Overview
 
-Check out a few resources that may come in handy when working with NestJS:
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/rooms` | Create a new room |
+| `POST` | `/rooms/:id/enter` | Enter a room with a nickname |
+| `GET` | `/rooms/:id` | Get room info & members |
+| `PATCH` | `/rooms/:id` | Extend room expiry by 7 days |
+| `DELETE` | `/rooms/:id` | Delete a room |
+| `GET` | `/tracks/search` | Search tracks via Last.fm |
+| `GET` | `/rooms/:id/tracks` | Get playlist |
+| `POST` | `/rooms/:id/tracks` | Add a track |
+| `DELETE` | `/rooms/:id/tracks/:trackId` | Delete a track |
+| `PATCH` | `/rooms/:id/tracks/:trackId` | Dislike a track |
+| `GET` | `/rooms/:id/users/:userId/tracks` | Get tracks by user |
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+---
 
-## Support
+## 📁 Project Structure
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+```
+├── src/
+│   ├── common/
+│   │   └── guards/         # Auth guard (cookie-based session)
+│   ├── modules/
+│   │   ├── room/           # Room creation & management
+│   │   └── track/          # Playlist & track services
+│   └── main.ts
+├── prisma/
+│   └── schema.prisma
+├── Dockerfile
+└── docker-compose.yml
+```
 
-## Stay in touch
+---
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+## 🤝 Contributing
 
-## License
+Feedback and bug reports are welcome!  
+👉 [Submit an issue here](https://forms.gle/ruhd2B76yE1otKce7)
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
-# Shared-Playlist
+---
+
+## 👤 Author
+
+**Eunsong Choi**  
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=flat&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/eunsongchoi04)
+[![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat&logo=github&logoColor=white)](https://github.com/eschoi04)
+
+---
+
+## 📄 License
+
+MIT License © 2026 Eunsong Choi
+
+---
+
+<p align="center">Music data powered by <a href="https://www.last.fm/api">Last.fm API</a> 🎵</p>
