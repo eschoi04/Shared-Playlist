@@ -13,7 +13,7 @@ async function bootstrap() {
 
   // enable cors settings for front-end.
   app.enableCors({
-    origin: 'https://shared-playlist-fe.vercel.app/',
+    origin: 'https://shared-playlist-fe.vercel.app',
     credentials: true,
   });
 
