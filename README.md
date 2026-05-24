@@ -2,7 +2,7 @@
 
 > Build a playlist together with your favorite people — no sign-up required.
 
-**[🔗 Live Demo → shared-playlist.com](https://www.shared-playlist.com)**
+**[🔗 Live Demo → shared-playlist.com](https://www.shared-playlist.com)** -> currently unavailable due to the server managing cost.
 
 ---
 
